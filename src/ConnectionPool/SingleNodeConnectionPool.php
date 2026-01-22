@@ -19,6 +19,8 @@ class SingleNodeConnectionPool implements ConnectionPool
 
     private float $timeout;
 
+    private ?float $operationTimeout;
+
     private bool $autoSelectDb;
 
     /** @var Redis|Client|null */
@@ -28,13 +30,14 @@ class SingleNodeConnectionPool implements ConnectionPool
 
     private int $maxFails;
 
-    public function __construct(Driver $driver, string $host, int $port, int $database = 0, float $timeout = 0.0, bool $autoSelectDb = true, ?int $retryWait = null, ?int $maxFails = null)
+    public function __construct(Driver $driver, string $host, int $port, int $database = 0, float $timeout = 0.0, bool $autoSelectDb = true, ?int $retryWait = null, ?int $maxFails = null, ?float $operationTimeout = null)
     {
         $this->driver = $driver;
         $this->host = $host;
         $this->port = $port;
         $this->database = $database;
         $this->timeout = $timeout;
+        $this->operationTimeout = $operationTimeout;
         $this->autoSelectDb = $autoSelectDb;
         $this->retryWait = $retryWait ?? 1000;
         $this->maxFails = $maxFails ?? 1;
@@ -48,7 +51,7 @@ class SingleNodeConnectionPool implements ConnectionPool
         if ($this->connection !== null) {
             return $this->connection;
         }
-        $this->connection = $this->driver->getConnectionFactory()->create($this->host, $this->port, $this->timeout);
+        $this->connection = $this->driver->getConnectionFactory()->create($this->host, $this->port, $this->timeout, $this->operationTimeout);
 
         if ($this->autoSelectDb) {
             $this->driver->connectionSelect($this->connection, $this->database);

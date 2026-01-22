@@ -31,14 +31,18 @@ class RedisConnectionFactory implements ConnectionFactory
                 break;
         }
     }
+
     /**
      * @return Redis
      */
-    public function create(string $host, int $port, float $timeout = 0.0)
+    public function create(string $host, int $port, float $timeout = 0.0, ?float $operationTimeout = null)
     {
         $redis = new Redis();
         $redis->connect($host, $port, $timeout);
         $redis->setOption(Redis::OPT_SERIALIZER, $this->optSerializer);
+        if ($operationTimeout !== null) {
+            $redis->setOption(Redis::OPT_READ_TIMEOUT, $operationTimeout);
+        }
 
         return $redis;
     }

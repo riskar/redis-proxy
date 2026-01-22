@@ -19,6 +19,8 @@ class SentinelConnectionPool implements ConnectionPool
 
     private float $timeout;
 
+    private ?float $operationTimeout;
+
     private $masterConnection = null;
 
     private array $replicas = [];
@@ -33,7 +35,7 @@ class SentinelConnectionPool implements ConnectionPool
 
     private bool $writeToReplicas = true;
 
-    public function __construct(Driver $driver, array $sentinels, string $clusterId, int $database = 0, float $timeout = 0.0)
+    public function __construct(Driver $driver, array $sentinels, string $clusterId, int $database = 0, float $timeout = 0.0, ?float $operationTimeout = null)
     {
         shuffle($sentinels);
 
@@ -42,6 +44,7 @@ class SentinelConnectionPool implements ConnectionPool
         $this->clusterId = $clusterId;
         $this->database = $database;
         $this->timeout = $timeout;
+        $this->operationTimeout = $operationTimeout;
     }
 
     public function setRetryWait(int $retryWait): SentinelConnectionPool
@@ -118,7 +121,7 @@ class SentinelConnectionPool implements ConnectionPool
             }
 
             try {
-                $this->masterConnection = $this->driver->getConnectionFactory()->create($masterData[0], $masterData[1], $this->timeout);
+                $this->masterConnection = $this->driver->getConnectionFactory()->create($masterData[0], $masterData[1], $this->timeout, $this->operationTimeout);
                 $this->driver->connectionSelect($this->masterConnection, $this->database);
                 $role = $this->driver->connectionRole($this->masterConnection);
                 if ($role !== 'master') {
@@ -169,7 +172,7 @@ class SentinelConnectionPool implements ConnectionPool
         if (count($this->replicas) > 0) {
             while ($replica = array_shift($this->replicas)) {
                 try {
-                    $replicaConnection = $this->driver->getConnectionFactory()->create($replica['ip'], $replica['port'], $this->timeout);
+                    $replicaConnection = $this->driver->getConnectionFactory()->create($replica['ip'], $replica['port'], $this->timeout, $this->operationTimeout);
                     $this->driver->connectionSelect($replicaConnection, $this->database);
 
                     $role = $this->driver->connectionRole($replicaConnection);
