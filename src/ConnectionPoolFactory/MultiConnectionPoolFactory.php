@@ -21,6 +21,8 @@ class MultiConnectionPoolFactory implements ConnectionPoolFactory
 
     private float $timeout;
 
+    private ?float $operationTimeout;
+
     private ?int $retryWait;
 
     private ?int $maxFails;
@@ -31,12 +33,13 @@ class MultiConnectionPoolFactory implements ConnectionPoolFactory
      * @param array{host: string, port: int} $master
      * @param array{array{host: string, port: int}} $slaves
      */
-    public function __construct(array $master, array $slaves, int $database = 0, float $timeout = 0.0, ?int $retryWait = null, ?int $maxFails = null, bool $writeToReplicas = true)
+    public function __construct(array $master, array $slaves, int $database = 0, float $timeout = 0.0, ?int $retryWait = null, ?int $maxFails = null, bool $writeToReplicas = true, ?float $operationTimeout = null)
     {
         $this->master = $master;
         $this->slaves = $slaves;
         $this->database = $database;
         $this->timeout = $timeout;
+        $this->operationTimeout = $operationTimeout;
         $this->retryWait = $retryWait;
         $this->maxFails = $maxFails;
         $this->writeToReplicas = $writeToReplicas;
@@ -44,7 +47,7 @@ class MultiConnectionPoolFactory implements ConnectionPoolFactory
 
     public function create(Driver $driver): MultiConnectionPool
     {
-        $connectionPool = new MultiConnectionPool($driver, $this->master, $this->slaves, $this->database, $this->timeout);
+        $connectionPool = new MultiConnectionPool($driver, $this->master, $this->slaves, $this->database, $this->timeout, $this->operationTimeout);
         $connectionPool->setWriteToReplicas($this->writeToReplicas);
         if ($this->retryWait) {
             $connectionPool->setRetryWait($this->retryWait);

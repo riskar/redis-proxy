@@ -26,7 +26,7 @@ abstract class BaseDriverTest extends TestCase
 
     public function testSelectInvalidDatabase()
     {
-        $this->expectExceptionMessage("Invalid DB index");
+        $this->expectExceptionMessage('Invalid DB index');
         $this->expectException(RedisProxyException::class);
         $this->redisProxy->select(-1);
     }
@@ -302,7 +302,7 @@ abstract class BaseDriverTest extends TestCase
 
     public function testWrongNumberOfArgumentsMset(): void
     {
-        $this->expectExceptionMessage("Wrong number of arguments for mset command");
+        $this->expectExceptionMessage('Wrong number of arguments for mset command');
         $this->expectException(RedisProxyException::class);
         $this->redisProxy->mset('my_key_1', 'my_value_1', 'my_key_2', 'my_value_2', 'xxx');
     }
@@ -413,14 +413,14 @@ abstract class BaseDriverTest extends TestCase
 
     public function testDelNoKeys(): void
     {
-        $this->expectExceptionMessage("Wrong number of arguments for del command");
+        $this->expectExceptionMessage('Wrong number of arguments for del command');
         $this->expectException(RedisProxyException::class);
         $this->redisProxy->del();
     }
 
     public function testDeleteNoKeys(): void
     {
-        $this->expectExceptionMessage("Wrong number of arguments for del command");
+        $this->expectExceptionMessage('Wrong number of arguments for del command');
         $this->expectException(RedisProxyException::class);
         $this->redisProxy->delete();
     }
@@ -727,7 +727,7 @@ abstract class BaseDriverTest extends TestCase
 
     public function testWrongNumberOfArgumentsHmset(): void
     {
-        $this->expectExceptionMessage("Wrong number of arguments for hmset command");
+        $this->expectExceptionMessage('Wrong number of arguments for hmset command');
         $this->expectException(RedisProxyException::class);
         $this->redisProxy->hmset('my_hash_key', 'my_field_1', 'my_value_1', 'my_field_2', 'my_value_2', 'xxx');
     }
@@ -1394,7 +1394,7 @@ abstract class BaseDriverTest extends TestCase
         self::assertEquals(RedisProxy::TYPE_SORTED_SET, $this->redisProxy->type('my_sorted_set_key'));
     }
 
-    public function testRename():void
+    public function testRename(): void
     {
         self::assertNull($this->redisProxy->get('my_key'));
         self::assertTrue($this->redisProxy->set('my_key', 'my_value'));
@@ -1411,7 +1411,8 @@ abstract class BaseDriverTest extends TestCase
     {
         $this->expectExceptionMessage("Error for command 'subscribe', use getPrevious() for more info");
         $this->expectException(RedisProxyException::class);
-        $this->redisProxy->subscribe(function (){});
+        $this->redisProxy->subscribe(function () {
+        });
     }
 
     public function testPublish()

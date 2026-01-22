@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased][unreleased]
+### Added
+- Read/write operation timeout config
 
 ## [1.7.0] - 2025-12-10
 ### Added
